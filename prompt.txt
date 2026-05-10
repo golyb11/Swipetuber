@@ -1,0 +1,294 @@
+PROJECT NAME: SWIPETUBE (Android Mobile App via React Native Expo)
+TARGET PLATFORM: Android
+ROLE OF AI: You are a Senior React Native UI/UX Engineer, Animation Expert, and Systems Architect.
+GOAL: Build a pixel-perfect, 3D-layered, gesture-driven application with flawless physics and local-first architecture.
+
+[CONTEXT & INSTRUCTIONS FOR THE AI IDE]
+As an AI IDE, to build this project perfectly, you must understand the Visual Rendering Tree, the Z-Axis Depth (3D), the Component Physics, and the overall aesthetic feeling of the app. Do NOT use standard flat Material Design components. Do NOT improvise the color palette. Follow the exact DOM/View structure, visual descriptions, shadow mathematics, and state-driven animations outlined below. Read ALL 12 modules before writing a single line of code.
+MODULE 1: THE "SAVANNA" DESIGN SYSTEM & VISUAL IDENTITY
+
+Visual Concept: The interface must feel physical, calming, and premium. Videos are represented as heavy polaroid cards lying on a soft, milky table. The UI must invoke a sense of calm and order, countering the usual chaotic noise of social media.
+
+1.1. Color Palette (Strict Hex Codes - DO NOT deviate):
+
+    Background Base (#EBE5D9): A warm, light milky beige. This fills the entire main screen.
+
+    Card Surface (#F7F5F0): A pure off-white cream. Used for the cards and sliding sheets to make them pop against the background.
+
+    Typography Dark (#3E362E): Deep espresso brown (do not use pure black). Used for main titles and active icons.
+
+    Typography Muted (#7A6B5D): A soft latte brown. Used for descriptions, timestamps, and inactive elements.
+
+    Highlight/Accent (#A48B71): Soft mocha brown. Used for primary buttons or active states.
+
+    Drawer Background (#DFD7C8): A slightly darker beige to give the sidebar visual depth behind the main screen.
+
+    Action Archive (#8C9970): Muted olive green (Positive action).
+
+    Action Delete (#B27065): Muted terracotta red (Destructive action).
+
+    3D Shadow Base (#2C241B): Very dark warm brown (NOT black) to keep shadows realistic.
+
+1.2. Typography Guidelines:
+
+    Use standard system fonts but styled heavily.
+
+    Main Titles (Card titles, Sheet headers): FontWeight '800', Color Typography Dark, slightly negative letter spacing (-0.5px).
+
+    Body Text: FontWeight '400', Color Typography Muted, LineHeight 24px for high readability.
+
+MODULE 2: 3D DEPTH & SHADOW MATHEMATICS
+
+Flat design is strictly rejected. Cards must hover and cast realistic shadows based on their Z-index and user interaction. Implement a global shadow dictionary in StyleSheet:
+
+    stackBottom (For the 3rd card in the background deck):
+    { shadowColor: '#2C241B', shadowOffset: {width: 0, height: 2}, shadowOpacity: 0.05, shadowRadius: 4, elevation: 2 }
+
+    stackMiddle (For the 2nd card in the deck):
+    { shadowColor: '#2C241B', shadowOffset: {width: 0, height: 6}, shadowOpacity: 0.08, shadowRadius: 8, elevation: 5 }
+
+    cardTop (For the active front card):
+    { shadowColor: '#2C241B', shadowOffset: {width: 0, height: 12}, shadowOpacity: 0.15, shadowRadius: 16, elevation: 12 }
+
+    cardFloating (When the top card is lifted/dragged by the user):
+    { shadowColor: '#2C241B', shadowOffset: {width: 0, height: 20}, shadowOpacity: 0.25, shadowRadius: 24, elevation: 20 }
+
+MODULE 3: THE CARD STACK RENDER ENGINE
+
+Visual Layout: The main screen is beautifully empty (backgroundColor: #EBE5D9), filled only by the Background Base. In the direct center sits a stack of 3 cards.
+
+3.1. Rendering Logic:
+Extract the top 3 videos from the Zustand store's videos array. Map them in reverse order so the 3rd card renders first (at the back) and the 1st card renders last (on top).
+
+3.2. Depth Scaling (via useAnimatedStyle):
+Based on the card's position (index 0, 1, or 2) in the active 3-card stack, apply static transforms to create depth:
+
+    index === 2 (Top Card): scale: 1, translateY: 0. Applies shadows.cardTop.
+
+    index === 1 (Middle Card): scale: 0.95, translateY: -20 (moves it slightly up to peek from behind). Applies shadows.stackMiddle.
+
+    index === 0 (Bottom Card): scale: 0.90, translateY: -40. Applies shadows.stackBottom.
+
+3.3. Card UI Component (The "Polaroid" Look):
+
+    Dimensions: width: windowWidth * 0.85, height: windowHeight * 0.65.
+
+    Shape: borderRadius: 24px, smooth curves. backgroundColor: #F7F5F0.
+
+    Padding: 12px padding inside the card. This creates a physical white frame around the video thumbnail.
+
+    Thumbnail Image: Takes 80% of the card's height. borderRadius: 16px. resizeMode: cover.
+
+    Info Area: Bottom 20% of the card height. Flex-row layout. Contains Video Title (bold, max 2 lines) and Channel Name.
+
+MODULE 4: KINETIC PHYSICS & REANIMATED GESTURES
+
+Physics Feeling: The swipe must feel heavy, responsive, and physical.
+
+4.1. PanGestureHandler Rules:
+
+    Apply PanGestureHandler ONLY to the component where isTopCard === true.
+
+    Track movement using useSharedValue(0) for translateX and translateY.
+
+4.2. 3D Tilt Effect:
+As the user drags the card left/right, it must rotate on the Z-axis, creating a tossing motion.
+const rotate = useDerivedValue(() => interpolate(translateX.value, [-windowWidth/2, 0, windowWidth/2],[-10, 0, 10], Extrapolate.CLAMP) + 'deg');
+
+4.3. Dynamic Shadow Expansion:
+On gesture onBegin, animate the shadow properties from cardTop to cardFloating to simulate lifting the card off the stack. On gesture onFinalize (if returning to center), animate back to cardTop.
+
+4.4. Gesture Thresholds & Actions (onEnd):
+
+    RIGHT SWIPE (translateX.value > 120):
+
+        Trigger Haptic Feedback (Heavy).
+
+        Animate translateX off-screen withSpring.
+
+        Overlay: A soft Olive Green (#8C9970) view fades in over the card image with opacity tied to translateX.
+
+        Action: Open official YouTube App natively: Linking.openURL('vnd.youtube://watch?v=' + videoId).
+
+        State: Mark video as 'archived' in SQLite, instantly remove from Zustand array.
+
+    LEFT SWIPE (translateX.value < -120):
+
+        Trigger Haptic Feedback (Medium).
+
+        Animate translateX off-screen withSpring.
+
+        Overlay: A soft Terracotta Red (#B27065) view fades in.
+
+        Action: Delete permanently from SQLite and Zustand array.
+
+    UP SWIPE (translateY.value < -100):
+
+        Trigger Haptic Feedback (Light).
+
+        withSpring reset card to center (x: 0, y: 0).
+
+        Action: Emit event to open InfoBottomSheet.
+
+    DOWN SWIPE (translateY.value > 100):
+
+        Trigger Haptic Feedback (Light).
+
+        withSpring reset card to center.
+
+        Action: Emit event to open CommentsTopSheet.
+
+MODULE 5: THE DRAWER & BOTTOM/TOP SHEETS UI
+
+5.1. Drawer Navigation (Sidebar):
+
+    Aesthetic: Notion-style sidebar, warm and minimal. NOT the standard Android material drawer.
+
+    Background Color: #DFD7C8.
+
+    Layout:
+
+        Header: "SWIPETUBE" in deep espresso.
+
+        Section 1: User-created folders (FlatList).
+
+        Section 2 (Bottom): System folders ("Watch Later", "Archive").
+
+    Active Item State: Highlighted with a pill-shaped background (#EBE5D9) with a slight elevation.
+
+    Icons: Use lucide-react-native (Folder, Clock, Archive).
+
+5.2. InfoBottomSheet (Triggered by UP SWIPE):
+
+    Animation: Slides gracefully from the bottom edge withSpring.
+
+    Dimensions: Covers exactly 50% of screen height.
+
+    Visuals: Top-left and top-right borderRadius: 32px. Background: #F7F5F0.
+
+    Top handle: A small drag indicator (width: 40, height: 6, borderRadius: 3, backgroundColor: '#C1B09C') centered at the top.
+
+    Content: <ScrollView> containing the full video description, views, and publish date. Text color #7A6B5D.
+
+5.3. CommentsTopSheet (Triggered by DOWN SWIPE):
+
+    Animation: Drops from the top edge covering 65% of screen height.
+
+    Visuals: Bottom-left and bottom-right borderRadius: 32px. Background: #F7F5F0.
+
+    Drop-shadow: Apply cardFloating shadow to the bottom edge so it casts a shadow over the main screen.
+
+    Content: <FlatList> of YouTube comments. Each item has a circular avatar (width: 36, height: 36), bold author name, and description.
+
+MODULE 6: SQLITE DATABASE ARCHITECTURE (expo-sqlite)
+
+App is Local-First. Use expo-sqlite with asynchronous queries.
+
+6.1. Schema Initialization (Run on first launch):
+code SQL
+
+CREATE TABLE IF NOT EXISTS folders (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    is_system INTEGER DEFAULT 0, -- 1 for Archive/Watch Later
+    created_at INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS videos (
+    id TEXT PRIMARY KEY, -- YouTube Video ID
+    title TEXT NOT NULL,
+    thumbnail_url TEXT NOT NULL,
+    channel_name TEXT,
+    description TEXT,
+    folder_id TEXT NOT NULL,
+    status TEXT DEFAULT 'unread', -- 'unread' | 'archived'
+    added_at INTEGER NOT NULL,
+    FOREIGN KEY (folder_id) REFERENCES folders (id) ON DELETE CASCADE
+);
+
+6.2. Default Data Seed:
+On first launch, auto-insert two folders:
+id: 'sys_archive', name: 'Archive', is_system: 1
+id: 'sys_watchlater', name: 'Watch Later', is_system: 1
+MODULE 7: ZUSTAND STATE MANAGEMENT
+
+Zustand acts as the UI bridge.
+State Interface:
+
+    videos: Video[]
+
+    folders: Folder[]
+
+    activeFolderId: string
+
+Crucial UI Rule: When a card is swiped right/left, the Zustand store MUST update instantly (set((state) => ({ videos: filteredVideos }))). Do NOT wait for the SQLite query to finish before updating the UI state. Execute SQLite deletes/updates asynchronously in the background. This ensures the stack animation is instant and flawless. When the top card is removed from the array, React will naturally re-render, and the Middle Card (index 1) will become the new Top Card (index 2), smoothly expanding to scale: 1 via useAnimatedStyle.
+MODULE 8: ANDROID SHARE INTENT (THE KILLER FEATURE)
+
+Users will populate the app by clicking "Share" directly inside the official YouTube Android app.
+
+8.1. App.json Configuration:
+You must add Android intent filters to app.json so the Android OS recognizes SwipeTube as a target for sharing text/links.
+code JSON
+
+"intentFilters":[
+  {
+    "action": "SEND",
+    "data": [{ "mimeType": "text/plain" }],
+    "category": ["DEFAULT"]
+  }
+]
+
+8.2. URL Parsing & Interception (App.tsx):
+Use expo-intent-launcher or expo-linking to catch the shared URL upon app open.
+Execute this precise Regex to extract the 11-character YouTube Video ID from any format (youtu.be, /watch, /shorts):
+const videoIdMatch = sharedUrl.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#\&\?]*).*/);
+
+8.3. Metadata Fetching (oEmbed):
+Once you have the ID, do NOT require the user to be logged in just to save a link. Use YouTube's public oEmbed endpoint:
+GET https://www.youtube.com/oembed?url=https://youtube.com/watch?v={VIDEO_ID}&format=json
+Extract title, thumbnail_url, and author_name.
+Show a beautifully styled modal: "Save to Folder". User selects a folder, video saves to SQLite.
+MODULE 9: YOUTUBE API & GOOGLE OAUTH
+
+9.1. Google Login:
+Use expo-auth-session/providers/google.
+Request scope: https://www.googleapis.com/auth/youtube.readonly.
+Provide a minimal button in the Drawer: "Sync Google Account".
+
+9.2. "Watch Later" Sync Logic:
+Once authenticated, fetch the user's Watch Later playlist ID via channels endpoint (contentDetails.relatedPlaylists.watchLater).
+Fetch items via playlistItems endpoint.
+Insert the fetched videos into the SQLite database under folder_id = 'sys_watchlater'.
+
+9.3. Comments Fetching (For TopSheet):
+When user swipes DOWN, make a request to:
+GET https://youtube.googleapis.com/youtube/v3/commentThreads?part=snippet&videoId={VIDEO_ID}&order=relevance&maxResults=20
+Parse authorDisplayName, textDisplay, and authorProfileImageUrl.
+MODULE 10: EMPTY STATES & ERROR HANDLING
+
+When the videos array for the selected folder length is 0, the screen must not be blank.
+
+    Display centered text: "You've watched everything." (FontWeight '600', color Typography Muted).
+
+    Below the text, a minimal button: "Open YouTube".
+
+    Action: Linking.openURL('vnd.youtube://').
+
+    All API errors must be handled gracefully using subtle, Savanna-themed toast notifications. No raw alert boxes.
+
+MODULE 11: STEP-BY-STEP IMPLEMENTATION PLAN FOR AI IDE
+
+AI, you must build this project in the following strict order. Do not skip steps. Do not hallucinate external libraries.
+
+STEP 1 (Core Setup): Initialize Expo with TypeScript. Install react-native-reanimated, react-native-gesture-handler, expo-sqlite, zustand, lucide-react-native, @react-navigation/drawer. Configure Babel plugin for reanimated.
+STEP 2 (Design System): Create theme.ts containing the exact HEX codes and 3D shadow dictionaries.
+STEP 3 (Database): Build the expo-sqlite initialization script, DDL schemas, and repository functions.
+STEP 4 (State): Build the Zustand store that wraps the SQLite repositories.
+STEP 5 (UI Layout): Build the DrawerNavigator. Build the "Empty State" view.
+STEP 6 (Card Engine): Build SwipeableCard.tsx. Implement the slice(0,3).reverse() logic. Implement the Z-index useAnimatedStyle scaling (1, 0.95, 0.90).
+STEP 7 (Physics): Implement PanGestureHandler in the card. Apply rotation math, drag thresholds, and haptic feedback.
+STEP 8 (Overlays & Actions): Implement the Olive Green and Terracotta Red overlays tied to translateX. Link the swipe release to Zustand actions.
+STEP 9 (Sheets): Build the Top Sheet (Comments) and Bottom Sheet (Description) using absolute positioning and withSpring animations.
+STEP 10 (System Integrations): Add app.json intent filters. Implement Regex parsing and oEmbed metadata fetching.
+STEP 11 (Google API): Implement OAuth session and YouTube API calls for comments and Watch Later syncing.
+STEP 12 (Polish): Verify all fonts, colors, and 3D shadow behaviors perfectly match the Savanna specification.

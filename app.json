@@ -1,0 +1,80 @@
+{
+  "expo": {
+    "name": "Swipetuber",
+    "slug": "temp_app",
+    "version": "1.0.0",
+    "scheme": "com.swipetuber.app",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#E8E8E8"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#E84010"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "package": "com.swipetuber.app",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "vnd.youtube"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-share-intent",
+        {
+          "disableIOS": true,
+          "android": {
+            "mimeType": "text/plain"
+          }
+        }
+      ],
+      "@react-native-google-signin/google-signin"
+    ],
+    "extra": {
+      "eas": {
+        "build": {
+          "experimental": {
+            "ios": {
+              "appExtensions": [
+                {
+                  "targetName": "ShareExtension",
+                  "bundleIdentifier": "undefined.share-extension",
+                  "entitlements": {
+                    "com.apple.security.application-groups": [
+                      "group.undefined"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "projectId": "a90dffce-93ed-4024-959a-445f9eebc091"
+      }
+    }
+  }
+}
