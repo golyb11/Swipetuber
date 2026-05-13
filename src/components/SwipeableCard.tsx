@@ -19,7 +19,7 @@ const { width, height } = Dimensions.get('window');
 const CARD_WIDTH = width * 0.85;
 const CARD_HEIGHT = height * 0.65;
 
-// Thresholds for swipe actions
+
 const SWIPE_THRESHOLD_X = 120;
 const SWIPE_THRESHOLD_Y = 100;
 
@@ -43,8 +43,8 @@ export const SwipeableCard = ({ video, index, isTopCard }: SwipeableCardProps) =
 
   const onSwipeRight = () => {
     hapticHeavy();
-    Linking.openURL('vnd.youtube://' + video.id).catch(() => {
-      Linking.openURL('https://youtube.com/watch?v=' + video.id);
+    Linking.openURL('vnd.youtube:
+      Linking.openURL('https:
     });
     swipeRightArchive(video.id);
   };

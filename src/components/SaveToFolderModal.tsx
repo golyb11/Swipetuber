@@ -22,7 +22,7 @@ export const SaveToFolderModal = ({ visible, sharedUrl, onClose }: SaveToFolderM
   const colors = themes[theme];
   const typography = getTypography(colors);
 
-  // Exclude the 'Archive' folder since we only save to user folders or Watch Later
+
   const availableFolders = folders.filter(f => f.id !== 'sys_archive');
 
   useEffect(() => {
@@ -30,7 +30,7 @@ export const SaveToFolderModal = ({ visible, sharedUrl, onClose }: SaveToFolderM
       setSelectedFolderId(availableFolders[0].id);
     }
     if (!visible) {
-      setManualUrl(''); // reset when closed
+      setManualUrl('');
     }
   }, [visible, availableFolders, selectedFolderId]);
 
@@ -67,9 +67,9 @@ export const SaveToFolderModal = ({ visible, sharedUrl, onClose }: SaveToFolderM
       const newVideo = {
         id: videoId,
         title: metadata?.title || 'Unknown Title',
-        thumbnail_url: metadata?.thumbnail_url || `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+        thumbnail_url: metadata?.thumbnail_url || `https:
         channel_name: metadata?.author_name || 'Unknown Channel',
-        description: '', // We get this from API later if we want
+        description: '',
         folder_id: selectedFolderId,
         status: 'unread' as 'unread' | 'archived',
         added_at: Date.now()
@@ -77,7 +77,7 @@ export const SaveToFolderModal = ({ visible, sharedUrl, onClose }: SaveToFolderM
 
       await insertVideo(newVideo);
       
-      // Update the active folder to the one we just saved to, so the user sees it immediately
+
       const { setActiveFolder } = useStore.getState();
       await setActiveFolder(selectedFolderId);
       
@@ -131,7 +131,7 @@ export const SaveToFolderModal = ({ visible, sharedUrl, onClose }: SaveToFolderM
                   backgroundColor: colors.backgroundBase
                 }
               ]}
-              placeholder="https://youtube.com/..."
+              placeholder="https:
               placeholderTextColor={colors.typographyMuted}
               value={manualUrl}
               onChangeText={setManualUrl}

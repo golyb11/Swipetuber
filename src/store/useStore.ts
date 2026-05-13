@@ -19,7 +19,7 @@ import {
   findOrCreateSwipeTuberPlaylist,
 } from '../services/youtube';
 
-// ─── State shape ──────────────────────────────────────────────────────────────
+
 
 interface AppState {
   theme: ThemeName;
@@ -35,7 +35,7 @@ interface AppState {
   isAddVideoModalVisible: boolean;
 
   youtubeToken: string | null;
-  /** ID of the "SwipeTuber Watch Later" playlist on YouTube */
+
   swipeTuberPlaylistId: string | null;
   nextPageToken: string | null;
   isLoadingVideos: boolean;
@@ -43,7 +43,7 @@ interface AppState {
   comments: any[];
   isLoadingComments: boolean;
 
-  // ── Actions ──────────────────────────────────────────────────────────────
+
   toggleTheme: () => void;
   setFolders: (folders: Folder[]) => void;
   setVideos: (videos: Video[]) => void;
@@ -67,7 +67,7 @@ interface AppState {
   fetchVideoComments: (videoId: string) => Promise<void>;
 }
 
-// ─── Store ────────────────────────────────────────────────────────────────────
+
 
 export const useStore = create<AppState>((set, get) => ({
   theme: 'savanna',
@@ -90,7 +90,7 @@ export const useStore = create<AppState>((set, get) => ({
   comments: [],
   isLoadingComments: false,
 
-  // ── Theme ─────────────────────────────────────────────────────────────────
+
 
   toggleTheme: () =>
     set((state) => ({ theme: state.theme === 'savanna' ? 'midnight' : 'savanna' })),
@@ -99,7 +99,7 @@ export const useStore = create<AppState>((set, get) => ({
   setVideos: (videos) => set({ videos }),
   setAddVideoModalVisible: (visible) => set({ isAddVideoModalVisible: visible }),
 
-  // ── Sheets ────────────────────────────────────────────────────────────────
+
 
   openSheet: (type, video) => {
     set({ activeSheet: type, activeVideo: video });
@@ -109,7 +109,7 @@ export const useStore = create<AppState>((set, get) => ({
   },
   closeSheet: () => set({ activeSheet: null, activeVideo: null }),
 
-  // ── Folders / Videos ──────────────────────────────────────────────────────
+
 
   setActiveFolder: async (id) => {
     set({ activeFolderId: id });
@@ -152,7 +152,7 @@ export const useStore = create<AppState>((set, get) => ({
     }
   },
 
-  // ── Swipe actions ─────────────────────────────────────────────────────────
+
 
   commitSwipe: () => {
     const { lastSwipedVideo, lastSwipeType, youtubeToken } = get();
@@ -165,7 +165,7 @@ export const useStore = create<AppState>((set, get) => ({
         get().loadVideosForActiveFolder();
       });
     } else if (lastSwipeType === 'delete') {
-      // If the video came from the SwipeTuber playlist, delete it from YouTube too
+
       if (lastSwipedVideo.playlistItemId && youtubeToken) {
         deleteFromPlaylist(lastSwipedVideo.playlistItemId, youtubeToken).catch((e) => {
           console.error('Failed to delete from playlist', e);
@@ -239,7 +239,7 @@ export const useStore = create<AppState>((set, get) => ({
     });
   },
 
-  // ── User folders ──────────────────────────────────────────────────────────
+
 
   addFolder: async (name: string) => {
     try {
@@ -268,13 +268,13 @@ export const useStore = create<AppState>((set, get) => ({
     }
   },
 
-  // ── Auth ──────────────────────────────────────────────────────────────────
 
-  /**
-   * Called after successful Google Sign-In.
-   * Finds or creates the SwipeTuber Watch Later playlist, then loads videos.
-   * playlistId is passed directly to fetchWatchLater to avoid state lag.
-   */
+
+
+
+
+
+
   setYoutubeToken: async (token) => {
     set({ youtubeToken: token });
 
@@ -283,7 +283,7 @@ export const useStore = create<AppState>((set, get) => ({
     let playlistId: string | null = null;
     try {
       playlistId = await findOrCreateSwipeTuberPlaylist(token);
-      // Write to state synchronously before fetching
+
       set({ swipeTuberPlaylistId: playlistId });
     } catch (e) {
       console.error('Failed to find/create SwipeTuber playlist', e);
@@ -292,7 +292,7 @@ export const useStore = create<AppState>((set, get) => ({
     }
 
     if (get().activeFolderId === 'sys_watchlater' && playlistId) {
-      // Pass playlistId directly — don't rely on get() which may lag
+
       await get().fetchWatchLater(false, playlistId);
     }
   },
@@ -302,7 +302,7 @@ export const useStore = create<AppState>((set, get) => ({
     get().loadVideosForActiveFolder();
   },
 
-  // ── Duration filter ───────────────────────────────────────────────────────
+
 
   toggleDurationFilter: () => {
     const { hideLongVideos, youtubeToken, activeFolderId } = get();
@@ -312,15 +312,15 @@ export const useStore = create<AppState>((set, get) => ({
     }
   },
 
-  // ── Fetch SwipeTuber Watch Later (paginated) ──────────────────────────────
 
-  /**
-   * @param loadMore  - append next page instead of replacing
-   * @param forcePlaylistId - pass ID directly to avoid Zustand state lag on first load
-   */
+
+
+
+
+
   fetchWatchLater: async (loadMore = false, forcePlaylistId?: string) => {
     const { youtubeToken, swipeTuberPlaylistId, nextPageToken, hideLongVideos, videos } = get();
-    // Prefer the directly-passed ID to avoid race condition on first login
+
     const playlistId = forcePlaylistId ?? swipeTuberPlaylistId;
 
     if (!youtubeToken || !playlistId) return;
@@ -359,7 +359,7 @@ export const useStore = create<AppState>((set, get) => ({
           thumbnail_url:
             item.snippet.thumbnails?.high?.url ||
             item.snippet.thumbnails?.default?.url ||
-            `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+            `https:
           channel_name: item.snippet.videoOwnerChannelTitle || '',
           description: item.snippet.description || '',
           folder_id: 'sys_watchlater',
@@ -382,7 +382,7 @@ export const useStore = create<AppState>((set, get) => ({
         isInitializing: false,
       });
     } catch (e: any) {
-      // 404 means the stored playlist ID is stale (user deleted it on YouTube)
+
       if (e?.status === 404) {
         console.warn('[SwipeTuber] Playlist 404 — invalidating ID and re-creating...');
         set({ swipeTuberPlaylistId: null, isLoadingVideos: false });
@@ -392,7 +392,7 @@ export const useStore = create<AppState>((set, get) => ({
           try {
             const freshId = await findOrCreateSwipeTuberPlaylist(token);
             set({ swipeTuberPlaylistId: freshId });
-            // Retry with the fresh ID
+
             await get().fetchWatchLater(false, freshId);
           } catch (retryErr) {
             console.error('Failed to recover from 404', retryErr);
@@ -409,7 +409,7 @@ export const useStore = create<AppState>((set, get) => ({
     }
   },
 
-  // ── Comments ──────────────────────────────────────────────────────────────
+
 
   fetchVideoComments: async (videoId: string) => {
     set({ isLoadingComments: true, comments: [] });

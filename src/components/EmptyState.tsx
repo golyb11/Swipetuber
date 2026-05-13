@@ -9,8 +9,8 @@ export const EmptyState = () => {
   const typography = getTypography(colors);
 
   const handleOpenYouTube = () => {
-    Linking.openURL('vnd.youtube://').catch(() => {
-      Linking.openURL('https://youtube.com');
+    Linking.openURL('vnd.youtube:
+      Linking.openURL('https:
     });
   };
 

@@ -24,14 +24,14 @@ import { Video } from '../db/repository';
 import { Share as ShareIcon } from 'lucide-react-native';
 
 const { height } = Dimensions.get('window');
-// Taller sheet so description has room to breathe
+
 const SHEET_HEIGHT = height * 0.72;
 const DISMISS_THRESHOLD = SHEET_HEIGHT * 0.25;
 
-// ─── URL regex ────────────────────────────────────────────────────────────────
+
 const URL_REGEX = /(https?:\/\/[^\s]+)/g;
 
-// ─── Linkified text ───────────────────────────────────────────────────────────
+
 const LinkifiedText = ({
   text,
   style,
@@ -47,7 +47,7 @@ const LinkifiedText = ({
     <Text style={style}>
       {parts.map((part, i) => {
         if (URL_REGEX.test(part)) {
-          // Reset lastIndex after test()
+
           URL_REGEX.lastIndex = 0;
           return (
             <Text
@@ -65,7 +65,7 @@ const LinkifiedText = ({
   );
 };
 
-// ─── Component ────────────────────────────────────────────────────────────────
+
 
 export const InfoBottomSheet = () => {
   const { activeSheet, activeVideo, closeSheet, theme } = useStore();
@@ -88,7 +88,7 @@ export const InfoBottomSheet = () => {
     }
   }, [isVisible]);
 
-  // Pan gesture attached ONLY to the drag handle — scroll is unobstructed
+
   const panGesture = Gesture.Pan()
     .onUpdate((event) => {
       if (event.translationY > 0) {
@@ -116,7 +116,7 @@ export const InfoBottomSheet = () => {
     if (!activeVideo) return;
     try {
       await Share.share({
-        message: `Check out this video: https://youtube.com/watch?v=${activeVideo.id}`,
+        message: `Check out this video: https:
         title: activeVideo.title,
       });
     } catch (error: any) {
@@ -130,12 +130,12 @@ export const InfoBottomSheet = () => {
 
   return (
     <>
-      {/* Backdrop */}
+      {}
       <Animated.View style={[styles.backdrop, backdropStyle]}>
         <Pressable style={StyleSheet.absoluteFill} onPress={closeSheet} />
       </Animated.View>
 
-      {/* Sheet — NOT wrapped in GestureDetector so ScrollView works freely */}
+      {}
       <Animated.View
         style={[
           styles.sheet,
@@ -143,22 +143,22 @@ export const InfoBottomSheet = () => {
           animatedSheetStyle,
         ]}
       >
-        {/* Drag handle — only this area has the pan gesture */}
+        {}
         <GestureDetector gesture={panGesture}>
           <View style={styles.handleContainer}>
             <View style={[styles.handle, { backgroundColor: colors.typographyMuted }]} />
           </View>
         </GestureDetector>
 
-        {/* Scrollable content */}
+        {}
         <ScrollView
           contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}
           bounces
-          // Let the native scroll handler win over any parent gesture
+
           scrollEventThrottle={16}
         >
-          {/* Header row */}
+          {}
           <View style={styles.headerRow}>
             <Text
               style={[typography.mainTitle, styles.title, { flex: 1, color: colors.typographyDark }]}
@@ -177,7 +177,7 @@ export const InfoBottomSheet = () => {
 
           <View style={[styles.divider, { backgroundColor: 'rgba(0,0,0,0.08)' }]} />
 
-          {/* Description with clickable links */}
+          {}
           {video?.description ? (
             <LinkifiedText
               text={video.description}
@@ -195,7 +195,7 @@ export const InfoBottomSheet = () => {
   );
 };
 
-// ─── Styles ───────────────────────────────────────────────────────────────────
+
 
 const styles = StyleSheet.create({
   backdrop: {
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 12,
     paddingBottom: 8,
-    // Extra hit area so the handle is easy to grab
+
     paddingHorizontal: 80,
   },
   handle: {

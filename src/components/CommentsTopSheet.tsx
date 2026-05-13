@@ -71,7 +71,7 @@ export const CommentsTopSheet = () => {
 
   if (!activeVideo && !isVisible) return null;
 
-  // ── Skeleton rows ──────────────────────────────────────────────────────────
+
   const renderSkeleton = () => (
     <View>
       {[0, 1, 2, 3, 4].map((i) => (
@@ -80,7 +80,7 @@ export const CommentsTopSheet = () => {
     </View>
   );
 
-  // ── Comment row ────────────────────────────────────────────────────────────
+
   const renderComment = ({ item }: { item: any }) => (
     <View style={styles.commentContainer}>
       <View style={[styles.avatar, { backgroundColor: colors.backgroundBase }]}>
@@ -111,12 +111,12 @@ export const CommentsTopSheet = () => {
 
   return (
     <>
-      {/* Backdrop */}
+      {}
       <Animated.View style={[styles.backdrop, backdropStyle]}>
         <Pressable style={StyleSheet.absoluteFill} onPress={closeSheet} />
       </Animated.View>
 
-      {/* Sheet */}
+      {}
       <Animated.View
         style={[
           styles.sheet,
@@ -124,7 +124,7 @@ export const CommentsTopSheet = () => {
           animatedStyle,
         ]}
       >
-        {/* Drag handle — also dismisses on swipe up */}
+        {}
         <GestureDetector gesture={panGesture}>
           <View style={styles.header}>
             <View style={[styles.handle, { backgroundColor: colors.typographyMuted }]} />

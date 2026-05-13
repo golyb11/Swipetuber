@@ -57,7 +57,7 @@ class ErrorBoundaryClass extends React.Component<Props & { theme: 'savanna' | 'm
   }
 }
 
-// Wrapper to inject theme hook into class component
+
 export const ErrorBoundary = (props: Props) => {
   const { theme } = useStore();
   return <ErrorBoundaryClass {...props} theme={theme} />;

@@ -33,7 +33,7 @@ export const initDB = async () => {
       );
     `);
 
-    // Seed system folders if they don't exist
+
     const countRes = await db.getFirstAsync<{count: number}>('SELECT COUNT(*) as count FROM folders');
     if (countRes && countRes.count === 0) {
       const now = Date.now();

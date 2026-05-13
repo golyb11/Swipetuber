@@ -69,7 +69,7 @@ export const getShadows = (colors: typeof themes.savanna) => ({
   },
 });
 
-// For backward compatibility while refactoring
+
 export const colors = themes.savanna;
 export const typography = getTypography(colors);
 export const shadows = getShadows(colors);

@@ -129,7 +129,7 @@ export const CustomDrawerContent = (props: any) => {
           </Text>
         </TouchableOpacity>
 
-        {/* Toggle Duration Filter */}
+        {}
         {youtubeToken && activeFolderId === 'sys_watchlater' && (
           <TouchableOpacity style={[styles.syncButton, { backgroundColor: hideLongVideos ? colors.highlightAccent : 'rgba(0,0,0,0.05)' }]} onPress={toggleDurationFilter}>
             <Filter size={18} color={hideLongVideos ? colors.cardSurface : colors.typographyDark} />
@@ -139,7 +139,7 @@ export const CustomDrawerContent = (props: any) => {
           </TouchableOpacity>
         )}
 
-        {/* Sync Google Account / Sign Out Button */}
+        {}
         {youtubeToken ? (
           <TouchableOpacity style={[styles.syncButton, { backgroundColor: 'rgba(255,50,50,0.1)' }]} onPress={logout}>
             <LogOut size={18} color="#FF3B30" />

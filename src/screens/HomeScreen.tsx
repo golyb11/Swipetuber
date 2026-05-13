@@ -17,10 +17,10 @@ export const HomeScreen = ({ navigation }: any) => {
     return <View style={[styles.container, { backgroundColor: colors.backgroundBase }]} />;
   }
 
-  // Hard refresh: clear cache then reload from scratch
+
   const handleRefresh = () => {
     if (youtubeToken && activeFolderId === 'sys_watchlater') {
-      // fetchWatchLater with loadMore=false already resets videos & nextPageToken
+
       fetchWatchLater(false);
     } else {
       loadVideosForActiveFolder();

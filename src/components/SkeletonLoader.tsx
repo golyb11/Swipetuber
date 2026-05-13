@@ -10,7 +10,7 @@ import Animated, {
 import { useStore } from '../store/useStore';
 import { themes } from '../theme/theme';
 
-// ─── Single shimmer bone ──────────────────────────────────────────────────────
+
 
 interface BoneProps {
   style?: ViewStyle;
@@ -40,7 +40,7 @@ const Bone = ({ style, baseColor, highlightColor }: BoneProps) => {
   );
 };
 
-// ─── Card skeleton (used in CardStack while loading) ─────────────────────────
+
 
 export const CardSkeleton = () => {
   const { theme } = useStore();
@@ -51,18 +51,18 @@ export const CardSkeleton = () => {
 
   return (
     <View style={[styles.card, { backgroundColor: colors.cardSurface }]}>
-      {/* Thumbnail area */}
+      {}
       <Bone style={styles.thumbnail} baseColor={base} highlightColor={highlight} />
-      {/* Title lines */}
+      {}
       <Bone style={[styles.textLine, { width: '90%', marginTop: 14 }]} baseColor={base} highlightColor={highlight} />
       <Bone style={[styles.textLine, { width: '65%', marginTop: 8 }]} baseColor={base} highlightColor={highlight} />
-      {/* Channel */}
+      {}
       <Bone style={[styles.textLine, { width: '45%', marginTop: 8, height: 12 }]} baseColor={base} highlightColor={highlight} />
     </View>
   );
 };
 
-// ─── Comment skeleton (used in CommentsTopSheet while loading) ────────────────
+
 
 export const CommentSkeleton = () => {
   const { theme } = useStore();
@@ -83,7 +83,7 @@ export const CommentSkeleton = () => {
   );
 };
 
-// ─── Styles ───────────────────────────────────────────────────────────────────
+
 
 const styles = StyleSheet.create({
   bone: {

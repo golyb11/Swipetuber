@@ -19,7 +19,7 @@ export const CardStack = () => {
   const colors = themes[theme];
   const shadows = getShadows(colors);
 
-  // Infinite scroll: pre-fetch next page when fewer than 5 cards remain
+
   useEffect(() => {
     if (
       activeFolderId === 'sys_watchlater' &&
@@ -32,7 +32,7 @@ export const CardStack = () => {
     }
   }, [videos.length, activeFolderId, youtubeToken, nextPageToken, isLoadingVideos]);
 
-  // Show skeleton while the first page is loading
+
   if (isLoadingVideos && videos.length === 0) {
     return (
       <View style={styles.container}>
@@ -41,7 +41,7 @@ export const CardStack = () => {
     );
   }
 
-  // Top 3 cards for the stack effect
+
   const stackVideos = videos.slice(0, 3);
   const reversedStack = [...stackVideos].reverse();
 

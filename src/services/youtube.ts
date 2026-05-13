@@ -1,7 +1,7 @@
 const YOUTUBE_API_KEY = 'AIzaSyB8WNpH3w-XSgfGRkdMggIWFWWCVtCA-1k';
 const SWIPETUBER_PLAYLIST_NAME = 'SwipeTuber Watch Later';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+
 
 export interface OEmbedMetadata {
   title: string;
@@ -9,33 +9,33 @@ export interface OEmbedMetadata {
   thumbnail_url: string;
 }
 
-// ─── oEmbed (used for manual video add) ──────────────────────────────────────
+
 
 export const fetchOEmbedMetadata = async (videoId: string): Promise<OEmbedMetadata | null> => {
   try {
-    const url = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`;
+    const url = `https:
     const response = await fetch(url);
     if (response.ok) {
       const data = await response.json();
       return { title: data.title, author_name: data.author_name, thumbnail_url: data.thumbnail_url };
     }
 
-    // Fallback: scrape HTML
-    const htmlResponse = await fetch(`https://www.youtube.com/watch?v=${videoId}`);
+
+    const htmlResponse = await fetch(`https:
     const html = await htmlResponse.text();
     const titleMatch = html.match(/<title>(.*?) - YouTube<\/title>/) || html.match(/<title>(.*?)<\/title>/);
     let title = titleMatch ? titleMatch[1] : 'Unknown Title';
     title = title.replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
     const authorMatch = html.match(/"author":"(.*?)"/) || html.match(/ownerChannelName":"(.*?)"/);
     const authorName = authorMatch ? authorMatch[1] : 'Unknown Channel';
-    return { title, author_name: authorName, thumbnail_url: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` };
+    return { title, author_name: authorName, thumbnail_url: `https:
   } catch (error) {
     console.error('oEmbed fetch error:', error);
     return null;
   }
 };
 
-// ─── Duration helpers ─────────────────────────────────────────────────────────
+
 
 export const parseISO8601Duration = (duration: string) => {
   const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
@@ -56,17 +56,17 @@ export const parseISO8601Duration = (duration: string) => {
   return { text, seconds: totalSeconds };
 };
 
-// ─── Find or create the SwipeTuber Watch Later playlist ──────────────────────
 
-/**
- * Searches the authenticated user's playlists for one named
- * SWIPETUBER_PLAYLIST_NAME. Creates it if not found.
- * Returns the playlist ID.
- */
+
+
+
+
+
+
 export const findOrCreateSwipeTuberPlaylist = async (token: string): Promise<string> => {
-  // 1. Fetch user's playlists (mine=true, up to 50)
+
   const listUrl =
-    `https://www.googleapis.com/youtube/v3/playlists` +
+    `https:
     `?part=snippet&mine=true&maxResults=50`;
 
   const listRes = await fetch(listUrl, {
@@ -89,9 +89,9 @@ export const findOrCreateSwipeTuberPlaylist = async (token: string): Promise<str
     return foundId;
   }
 
-  // 2. Create the playlist
+
   const createRes = await fetch(
-    `https://www.googleapis.com/youtube/v3/playlists?part=snippet,status`,
+    `https:
     {
       method: 'POST',
       headers: {
@@ -117,13 +117,13 @@ export const findOrCreateSwipeTuberPlaylist = async (token: string): Promise<str
   const createdId = created.id as string;
   console.log('[SwipeTuber] Created new playlist ID:', createdId);
 
-  // YouTube needs time to index a freshly created private playlist
+
   await new Promise((resolve) => setTimeout(resolve, 2000));
 
   return createdId;
 };
 
-// ─── Fetch playlist items (paginated) ────────────────────────────────────────
+
 
 export const fetchPlaylistItems = async (
   token: string,
@@ -131,7 +131,7 @@ export const fetchPlaylistItems = async (
   pageToken?: string | null
 ) => {
   let url =
-    `https://www.googleapis.com/youtube/v3/playlistItems` +
+    `https:
     `?part=snippet,contentDetails&playlistId=${playlistId}&maxResults=10`;
 
   if (pageToken) url += `&pageToken=${pageToken}`;
@@ -142,7 +142,7 @@ export const fetchPlaylistItems = async (
 
   if (!response.ok) {
     const err = await response.text();
-    // Attach status so callers can detect 404 specifically
+
     const error = new Error(`Failed to fetch playlist items: ${err}`) as any;
     error.status = response.status;
     throw error;
@@ -151,10 +151,10 @@ export const fetchPlaylistItems = async (
   return response.json();
 };
 
-// ─── Keep old name as alias so existing store code keeps working ──────────────
+
 export const fetchWatchLaterPlaylist = fetchPlaylistItems;
 
-// ─── Video durations ──────────────────────────────────────────────────────────
+
 
 export const fetchVideoDurations = async (
   videoIds: string[]
@@ -162,7 +162,7 @@ export const fetchVideoDurations = async (
   if (videoIds.length === 0) return {};
 
   const url =
-    `https://www.googleapis.com/youtube/v3/videos` +
+    `https:
     `?part=contentDetails&id=${videoIds.join(',')}&key=${YOUTUBE_API_KEY}`;
 
   const response = await fetch(url);
@@ -177,14 +177,14 @@ export const fetchVideoDurations = async (
   return durations;
 };
 
-// ─── Delete playlist item (swipe-left sync) ───────────────────────────────────
+
 
 export const deleteFromPlaylist = async (
   playlistItemId: string,
   token: string
 ): Promise<boolean> => {
   const url =
-    `https://www.googleapis.com/youtube/v3/playlistItems?id=${playlistItemId}`;
+    `https:
 
   const response = await fetch(url, {
     method: 'DELETE',
@@ -199,11 +199,11 @@ export const deleteFromPlaylist = async (
   return true;
 };
 
-// ─── Comments ─────────────────────────────────────────────────────────────────
+
 
 export const fetchComments = async (videoId: string) => {
   const url =
-    `https://www.googleapis.com/youtube/v3/commentThreads` +
+    `https:
     `?part=snippet&videoId=${videoId}&maxResults=20&order=relevance&key=${YOUTUBE_API_KEY}`;
 
   try {
